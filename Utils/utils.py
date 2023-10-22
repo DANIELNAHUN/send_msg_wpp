@@ -1,9 +1,9 @@
 
-import pyautogui
 import time
 import webbrowser as web
 from platform import system
 
+import pyautogui
 
 _ALWAYS_SAFE = frozenset(b'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                          b'abcdefghijklmnopqrstuvwxyz'
@@ -77,7 +77,7 @@ def sendwhatmsg_instantly(
     if not check_number(number=phone_no):
         raise print("Country Code Missing in Phone Number!")
     web.open(f"https://web.whatsapp.com/send?phone={phone_no}&text={quote(message)}")
-    time.sleep(4)
+    time.sleep(8)
     pyautogui.press("enter")
     if tab_close:
         close_tab(wait_time=close_time)
