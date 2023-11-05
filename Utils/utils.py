@@ -67,7 +67,7 @@ def close_tab(wait_time: int = 2) -> None:
         raise Warning(f"{system().lower()} not supported!")
     pyautogui.press("enter")
 
-def sendwhatmsg_instantly(
+def enviar_mensaje_instantaneamente(
     phone_no: str,
     message: str,
     wait_time: int = 15,
