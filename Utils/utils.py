@@ -5,6 +5,10 @@ from platform import system
 
 import pyautogui
 
+import os
+
+os.environ['DISPLAY'] = ':0'
+
 _ALWAYS_SAFE = frozenset(b'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                          b'abcdefghijklmnopqrstuvwxyz'
                          b'0123456789'
