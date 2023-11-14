@@ -1,11 +1,16 @@
 version: "3.9"
 
 services:
-  api-etl:
+  app:
+    container_name: msg-fastapi-app
     build: .
     command: sh -c "uvicorn app:app --reload --port=8081 --host=0.0.0.0"
     ports:
       - 8081:8081
     volumes:
       - .:/app
-  
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

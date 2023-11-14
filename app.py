@@ -37,7 +37,3 @@ async def leer_excel(archivo: UploadFile = File(...)):
         mensaje = f"{str(row['prefijo_mensaje']).strip()} {str(row['nombre_contacto']).strip()} {str(row['sufijo_mensaje']).strip()}"
         utils.enviar_mensaje_instantaneamente(contact_nro, mensaje, tab_close = True, close_time = 1)
     return contacts.to_dict("records")
-
-# @app.get("/obtener-plantilla/")
-# async def plantilla():
-#     return FileResponse(path_plantilla, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
