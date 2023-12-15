@@ -3,11 +3,7 @@ import time
 import webbrowser as web
 from platform import system
 
-import keyboard
-
-import os
-
-keyboard.dumpkeys = False
+import pyautogui
 
 _ALWAYS_SAFE = frozenset(b'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                          b'abcdefghijklmnopqrstuvwxyz'
@@ -64,12 +60,12 @@ def quote_from_bytes(bs, safe='/'):
 def close_tab(wait_time: int = 2) -> None:
     time.sleep(wait_time)
     if system().lower() in ("windows", "linux"):
-        keyboard.press_and_release("ctrl + w")
+        pyautogui.hotkey("ctrl", "w")
     elif system().lower() == "darwin":
-        keyboard.press_and_release("command + w")
+        pyautogui.hotkey("command", "w")
     else:
         raise Warning(f"{system().lower()} not supported!")
-    keyboard.press("enter")
+    pyautogui.press("enter")
 
 def enviar_mensaje_instantaneamente(
     phone_no: str,
@@ -77,11 +73,13 @@ def enviar_mensaje_instantaneamente(
     wait_time: int = 15,
     tab_close: bool = False,
     close_time: int = 3,
-) -> None:
+        ) -> None:
     if not check_number(number=phone_no):
         raise print("Country Code Missing in Phone Number!")
     web.open(f"https://web.whatsapp.com/send?phone={phone_no}&text={quote(message)}")
     time.sleep(8)
-    keyboard.press("enter")
+    pyautogui.click()
+    pyautogui.press("enter")
+    time.sleep(1)
     if tab_close:
         close_tab(wait_time=close_time)
