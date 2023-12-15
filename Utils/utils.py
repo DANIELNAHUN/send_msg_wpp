@@ -3,13 +3,17 @@ import time
 import webbrowser as web
 from platform import system
 
+import lackey
 import pyautogui
+from lackey import *
 
 _ALWAYS_SAFE = frozenset(b'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                          b'abcdefghijklmnopqrstuvwxyz'
                          b'0123456789'
                          b'_.-~')
 _ALWAYS_SAFE_BYTES = bytes(_ALWAYS_SAFE)
+
+btn_send = "../Files/src/send_msg.JPG"
 
 def check_number(number: str) -> bool:
     return "+" in number or "_" in number
@@ -70,16 +74,17 @@ def close_tab(wait_time: int = 2) -> None:
 def enviar_mensaje_instantaneamente(
     phone_no: str,
     message: str,
-    wait_time: int = 15,
+    wait_time: int = 8,
     tab_close: bool = False,
     close_time: int = 3,
         ) -> None:
     if not check_number(number=phone_no):
         raise print("Country Code Missing in Phone Number!")
     web.open(f"https://web.whatsapp.com/send?phone={phone_no}&text={quote(message)}")
-    time.sleep(8)
-    pyautogui.click()
-    pyautogui.press("enter")
+    print(f"https://web.whatsapp.com/send?phone={phone_no}&text={quote(message)}")
+    time.sleep(wait_time)
+    if lackey.exists(btn_send):
+      lackey.click(btn_send)
     time.sleep(1)
     if tab_close:
         close_tab(wait_time=close_time)
