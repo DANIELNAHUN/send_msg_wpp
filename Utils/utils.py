@@ -83,3 +83,9 @@ def enviar_mensaje_instantaneamente(
     time.sleep(1)
     if tab_close:
         close_tab(wait_time=close_time)
+
+def check_navegador(tab_close: bool = False,close_time: int = 3,):
+    web.open(f"https://web.whatsapp.com/")
+    time.sleep(8)
+    if tab_close:
+        close_tab(wait_time=close_time)
