@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 
 import pandas as pd
@@ -112,6 +113,28 @@ async def mensajes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFi
             "incorrectos_data": lista_incorrectos,
         }
 
+@app.post("/envio-imagenes/")
+async def envio_imagenes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFile = File(...)):
+
+    if tiempo_espera != None and tiempo_espera < 8:
+        return "El minimo tiempo de espera entre un mensaje enviado y el siguiente es de 8 segundos, para que Whatsapp no detecte como spam."
+    else:
+        # Define la ruta donde se guardará el archivo
+        upload_path = "/uploads"
+        # Crea la ruta si no existe
+        os.makedirs(upload_path, exist_ok=True)
+        # Define la ruta completa del archivo
+        file_path = os.path.join(upload_path, archivo.filename)
+        # Guarda el archivo en la ruta especificada
+        with open(file_path, "wb") as buffer:
+            buffer.write(await archivo.read())
+        # Devuelve la ruta completa del archivo
+        response = {"file_path": file_path}
+        # Elimina el archivo después de usarlo
+        utils.enviar_imagen("+51922996705", response, msg)
+        os.remove(file_path)
+
+        return response
 
 
 @app.get("/check_navegador/")
