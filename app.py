@@ -48,23 +48,18 @@ async def mensajes_personalizados(tiempo_espera:int = None ,archivo: UploadFile 
 
             if numero.isdigit() and numero != "":
                 lista_correctos.append(index)
-
                 contact_nro = '+51'+numero
-
                 if pref_msg == "-":
                     pref_msg = "Hola"
                 if suf_msg == "-":
                     suf_msg = ""
                 if nombre == "-":
                     nombre = ""
-
                 mensaje = f"{pref_msg} {nombre} {suf_msg}"
                 tiempo_espera = 8
                 utils.enviar_mensaje_instantaneamente(contact_nro, mensaje, tab_close = True, close_time = 1, wait_time = tiempo_espera)
-
             else:
                 lista_incorrectos.append(index)
-
         return {
             "total": len(contacts),
             "correctos": len(lista_correctos),
@@ -74,12 +69,10 @@ async def mensajes_personalizados(tiempo_espera:int = None ,archivo: UploadFile 
         }
 
 
-
 @app.post("/envio_mensajes_masivos/")
-async def mensajes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFile = File(...)):
+async def mensajes_masivos(msg: str, tiempo_espera:int = None, lista_numeros: UploadFile = File(...)):
 
-    contenido = await archivo.read()
-
+    contenido = await lista_numeros.read()
     if tiempo_espera != None and tiempo_espera < 8:
         return "El minimo tiempo de espera entre un mensaje enviado y el siguiente es de 8 segundos, para que Whatsapp no detecte como spam."
     else:
@@ -91,20 +84,14 @@ async def mensajes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFi
 
         for index, row in contacts.iterrows():
             numero = str(row['nro_celular_contacto']).strip()
-
             if numero.isdigit() and numero != "":
                 lista_correctos.append(index)
-
                 contact_nro = '+51'+numero
-
                 mensaje = msg
-
                 tiempo_espera = 8
                 utils.enviar_mensaje_instantaneamente(contact_nro, mensaje, tab_close = True, close_time = 1, wait_time = tiempo_espera)
-
             else:
                 lista_incorrectos.append(index)
-
         return {
             "total": len(contacts),
             "correctos": len(lista_correctos),
@@ -113,27 +100,41 @@ async def mensajes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFi
             "incorrectos_data": lista_incorrectos,
         }
 
+
 @app.post("/envio-imagenes/")
-async def envio_imagenes_masivos(msg: str, tiempo_espera:int = None, archivo: UploadFile = File(...)):
+async def envio_imagenes_masivos(msg: str = None, tiempo_espera:int = None, imagen: UploadFile = File(...), lista_numeros: UploadFile = File(...)):
+
+    contenido = await lista_numeros.read()
 
     if tiempo_espera != None and tiempo_espera < 8:
         return "El minimo tiempo de espera entre un mensaje enviado y el siguiente es de 8 segundos, para que Whatsapp no detecte como spam."
     else:
-        # Define la ruta donde se guardará el archivo
         upload_path = "/uploads"
-        # Crea la ruta si no existe
         os.makedirs(upload_path, exist_ok=True)
-        # Define la ruta completa del archivo
-        file_path = os.path.join(upload_path, archivo.filename)
-        # Guarda el archivo en la ruta especificada
+        file_path = os.path.join(upload_path, imagen.filename)
         with open(file_path, "wb") as buffer:
-            buffer.write(await archivo.read())
-        # Devuelve la ruta completa del archivo
+            buffer.write(await imagen.read())
         response = {"file_path": file_path}
-        # Elimina el archivo después de usarlo
-        utils.enviar_imagen("+51922996705", response, msg)
-        os.remove(file_path)
+        img_path = response['file_path']
+        contacts = pd.read_excel(BytesIO(contenido))
+        contacts = contacts.fillna("-")
+        lista_correctos=[]
+        lista_incorrectos=[]
 
+        for index, row in contacts.iterrows():
+            numero = str(row['nro_celular_contacto']).strip()
+            if numero.isdigit() and numero != "":
+                lista_correctos.append(index)
+                contact_nro = '+51'+numero
+                mensaje = msg
+                tiempo_espera = 8
+                if mensaje == None:
+                    utils.enviar_imagen(phone_no = contact_nro, img_path = img_path, tab_close = True, close_time = 1, wait_time = tiempo_espera)
+                else:
+                    utils.enviar_imagen(phone_no = contact_nro, img_path = img_path, msg = mensaje, tab_close = True, close_time = 1, wait_time = tiempo_espera)
+            else:
+                lista_incorrectos.append(index)
+        os.remove(file_path)
         return response
 
 
